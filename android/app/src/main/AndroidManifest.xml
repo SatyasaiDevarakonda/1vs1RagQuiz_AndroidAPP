@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Lab Experiment Permissions -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.RagQuiz"
+        android:usesCleartextTraffic="true">
+
+        <!-- Exp 3: Splash Screen ("Hello World" -> "1vs1 RAG Quiz") -->
+        <activity
+            android:name=".SplashActivity"
+            android:exported="true"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Exp 12: Login & Authentication backed by SQLite & Backend -->
+        <activity
+            android:name=".LoginActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <!-- Exp 7 & 8: Registration Form with RadioGroup, Age, Address, Avatar -->
+        <activity
+            android:name=".RegisterActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <!-- Exp 11: MainActivity hosting BottomNavigationView & Fragments -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <!-- Exp 9 & 10: Match Lobby with Intent Extras & SMS Share -->
+        <activity
+            android:name=".LobbyActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <!-- Exp 4 & 9: 1v1 Quiz Battle with Enter key attempts counter & polling -->
+        <activity
+            android:name=".QuizActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <!-- Match Results Screen -->
+        <activity
+            android:name=".ResultActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <!-- Per-question breakdown of a past match (History tab) -->
+        <activity
+            android:name=".MatchDetailActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+    </application>
+
+</manifest>

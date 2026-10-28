@@ -1,0 +1,18 @@
+<!-- In-app brand mark -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="56dp"
+    android:height="56dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <path
+        android:fillColor="#2563EB"
+        android:fillType="evenOdd"
+        android:pathData="M52,30 a20,20 0 1,1 -0.1,0 z M52,37 a13,13 0 1,0 0.1,0 z" />
+
+    <path
+        android:strokeColor="#2563EB"
+        android:strokeWidth="9"
+        android:strokeLineCap="round"
+        android:pathData="M61,61 L73,73" />
+</vector>

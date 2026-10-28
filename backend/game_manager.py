@@ -12,6 +12,20 @@ from bson import ObjectId
 
 from database import get_database
 
+# asyncio.create_task() only keeps a WEAK reference to the task it returns -
+# if nothing else holds a reference, the task can be garbage-collected before
+# it finishes, silently cancelling it mid-flight. This bit history saves and
+# cleanup jobs intermittently. Route every fire-and-forget task through here
+# so a strong reference is kept until it actually completes.
+_background_tasks: Set[asyncio.Task] = set()
+
+
+def spawn(coro) -> asyncio.Task:
+    task = asyncio.create_task(coro)
+    _background_tasks.add(task)
+    task.add_done_callback(_background_tasks.discard)
+    return task
+
 
 class ConnectionManager:
     """Manages WebSocket connections with proper state tracking"""
@@ -92,7 +106,7 @@ class ConnectionManager:
         
         for socket_id, ws in self.competition_connections[room_code].items():
             if self.is_connected(socket_id):
-                asyncio.create_task(self.send_to_socket(socket_id, event, data))
+                spawn(self.send_to_socket(socket_id, event, data))
 
     def add_competition_connection(self, room_code: str, socket_id: str, websocket: WebSocket):
         """Add a connection to a competition room"""
@@ -228,6 +242,8 @@ class GameManager:
                 await self.cm.send_to_socket(socket_id, "error", {"message": "Already in this room"})
                 return
 
+        is_single = room["mode"] == "single"
+
         player = {
             "socket_id": socket_id,
             "user_id": user_id,
@@ -236,7 +252,7 @@ class GameManager:
             "current_answer": None,
             "answer_time": None,
             "points_earned": 0,
-            "is_ready": False,
+            "is_ready": is_single,
             "is_connected": True,
             "correct_answers": 0
         }
@@ -256,6 +272,11 @@ class GameManager:
         await self.cm.broadcast_to_room(room_code, "player_joined", {
             "players": formatted_players
         }, exclude=socket_id)
+
+        # Single-player rooms (e.g. a solo quiz generated from an uploaded
+        # document) have nobody to wait for - start as soon as the host joins.
+        if is_single:
+            await self.start_game(room_code)
 
     async def toggle_ready(self, socket_id: str, room_code: str):
         """Toggle player ready status"""
@@ -318,7 +339,8 @@ class GameManager:
 
         await self.cm.broadcast_to_room(room_code, "game_started", {
             "totalQuestions": len(room["questions"]),
-            "timePerQuestion": room["settings"].get("timePerQuestion", 15)
+            "timePerQuestion": room["settings"].get("timePerQuestion", 15),
+            "sourceDocument": room.get("pdf_filename")
         })
 
         await asyncio.sleep(0.5)
@@ -480,6 +502,15 @@ class GameManager:
             answered = player["current_answer"] is not None
             is_correct = player["current_answer"] == question["correct_answer"] if answered else False
 
+            player.setdefault("answer_log", []).append({
+                "question": question["question"],
+                "options": question.get("options", []),
+                "correctAnswer": question["correct_answer"],
+                "yourAnswer": player["current_answer"],
+                "correct": is_correct,
+                "pointsEarned": player.get("points_earned", 0) if is_correct else 0
+            })
+
             await self.cm.send_to_socket(player["socket_id"], "answer_result", {
                 "correct": is_correct,
                 "correctAnswer": question["correct_answer"],
@@ -528,10 +559,15 @@ class GameManager:
 
         print(f"Ending game in room {room_code}")
 
-        # Cancel any active timers
+        # Cancel any active timers - but never the task we're running in.
+        # A game that ends naturally reaches here FROM the question timer task
+        # (question_timer -> next_question -> end_game); cancelling it would make
+        # the next await below raise CancelledError and silently skip saving
+        # history and cleaning up the room.
         if room_code in self.timers:
-            self.timers[room_code].cancel()
-            del self.timers[room_code]
+            timer = self.timers.pop(room_code)
+            if timer is not asyncio.current_task():
+                timer.cancel()
 
         # Prepare results
         players = room["players"]
@@ -548,7 +584,8 @@ class GameManager:
             "players": [self._format_player(p) for p in sorted_players],
             "winner": winner,
             "totalQuestions": len(room["questions"]),
-            "mode": room["mode"]
+            "mode": room["mode"],
+            "sourceDocument": room.get("pdf_filename")
         }
 
         # Send results to EACH connected player
@@ -561,14 +598,14 @@ class GameManager:
         await asyncio.sleep(0.5)
 
         # Save game history in background
-        asyncio.create_task(self._save_game_history(room_code, room, winner))
+        spawn(self._save_game_history(room_code, room, winner))
 
         # Cleanup AI-generated data if applicable
         if room.get("ai_generated"):
-            asyncio.create_task(self._cleanup_ai_data(room_code))
+            spawn(self._cleanup_ai_data(room_code))
 
         # Clean up room after delay
-        asyncio.create_task(self._cleanup_room_delayed(room_code))
+        spawn(self._cleanup_room_delayed(room_code))
 
     async def _save_game_history(self, room_code: str, room: dict, winner: str):
         """Save game history to database"""
@@ -577,7 +614,11 @@ class GameManager:
             players = room["players"]
 
             for player in players:
-                if player["user_id"]:
+                # Guest user_ids are random UUIDs, not Mongo ObjectIds - they
+                # have no account row to write stats to, so skip them here
+                # rather than letting one bad ObjectId() call abort the whole
+                # loop (which previously also skipped the real player's save).
+                if player["user_id"] and ObjectId.is_valid(player["user_id"]):
                     result = "completed"
                     if room["mode"] == "multiplayer":
                         if winner == "draw":
@@ -605,6 +646,8 @@ class GameManager:
                         "opponent_username": opponent,
                         "opponent_score": opponent_score,
                         "result": result,
+                        "source_document": room.get("pdf_filename"),
+                        "question_log": player.get("answer_log", []),
                         "played_at": datetime.utcnow()
                     }
 

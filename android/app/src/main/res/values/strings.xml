@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">RAG Quiz</string>
+    <string name="app_tagline">AI-generated quizzes, solo or head-to-head</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_play">Play</string>
+    <string name="nav_history">History</string>
+    <string name="nav_profile">Profile</string>
+
+    <!-- Auth -->
+    <string name="login_title">Welcome back</string>
+    <string name="login_subtitle">Sign in to continue</string>
+    <string name="email_label">Email</string>
+    <string name="password_label">Password</string>
+    <string name="btn_login">Sign in</string>
+    <string name="btn_guest">Continue as guest</string>
+    <string name="btn_register">Create account</string>
+    <string name="no_account">New here? Create an account</string>
+    <string name="already_account">Already have an account? Sign in</string>
+
+    <!-- Registration -->
+    <string name="register_title">Create your account</string>
+    <string name="register_subtitle">A few details to get you started</string>
+    <string name="username_label">Username</string>
+    <string name="address_label">Location</string>
+    <string name="age_label">Age</string>
+    <string name="gender_label">Gender</string>
+    <string name="gender_male">Male</string>
+    <string name="gender_female">Female</string>
+    <string name="gender_other">Other</string>
+    <string name="avatar_label">Choose an avatar</string>
+    <string name="btn_cycle_avatar">Next avatar</string>
+
+    <!-- Play -->
+    <string name="play_title">Play</string>
+    <string name="play_subtitle">Practise on your own or challenge a friend</string>
+    <string name="btn_solo_start">Start solo quiz</string>
+    <string name="btn_create_room">Create room</string>
+    <string name="join_title">Join a room</string>
+    <string name="join_hint">4-digit code</string>
+    <string name="btn_join_room">Join</string>
+
+    <!-- AI quiz from document -->
+    <string name="pdf_title">Start a quiz</string>
+    <string name="pdf_desc">Upload a PDF, DOCX or TXT file - the AI generates every question from it. Play it yourself, or create a room and share the code for a 1v1.</string>
+    <string name="btn_choose_file">Choose file</string>
+    <string name="no_file_chosen">No file chosen</string>
+    <string name="generating_quiz">Generating quiz from your document…</string>
+
+    <!-- Lobby -->
+    <string name="lobby_title">Game lobby</string>
+    <string name="room_code_label">ROOM CODE</string>
+    <string name="waiting_opponent">Waiting for another player…</string>
+    <string name="btn_share_code">Share code</string>
+    <string name="btn_copy_code">Copy</string>
+    <string name="btn_ready">I\'m ready</string>
+    <string name="preparing_quiz">Preparing your quiz…</string>
+
+    <!-- Quiz -->
+    <string name="enter_answer_hint">Type an answer and press enter</string>
+
+    <!-- Settings -->
+    <string name="theme_picker_title">Appearance</string>
+    <string name="server_url_label">Server URL</string>
+    <string name="btn_test_connection">Test</string>
+    <string name="btn_sign_out">Sign out</string>
+</resources>

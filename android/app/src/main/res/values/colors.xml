@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Accent: one restrained brand colour, used sparingly -->
+    <color name="primary">#2563EB</color>
+    <color name="primary_pressed">#1D4ED8</color>
+    <color name="primary_soft">#EFF6FF</color>
+
+    <!-- Surfaces -->
+    <color name="bg_screen">#F6F7F9</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="surface_subtle">#F9FAFB</color>
+    <color name="border">#E5E7EB</color>
+    <color name="border_strong">#D1D5DB</color>
+
+    <!-- Text -->
+    <color name="text_primary">#111827</color>
+    <color name="text_secondary">#6B7280</color>
+    <color name="text_muted">#9CA3AF</color>
+    <color name="text_on_primary">#FFFFFF</color>
+
+    <!-- Status -->
+    <color name="success">#059669</color>
+    <color name="success_soft">#ECFDF5</color>
+    <color name="error">#DC2626</color>
+    <color name="error_soft">#FEF2F2</color>
+    <color name="warning">#D97706</color>
+    <color name="warning_soft">#FFFBEB</color>
+
+    <!-- Theme presets offered in Settings -->
+    <color name="theme_light_bg">#F6F7F9</color>
+    <color name="theme_warm_bg">#FAF8F5</color>
+    <color name="theme_cool_bg">#F3F6FB</color>
+    <color name="theme_mint_bg">#F2F8F5</color>
+    <color name="theme_slate_bg">#EEF0F3</color>
+
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="transparent">#00000000</color>
+</resources>

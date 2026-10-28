@@ -337,6 +337,8 @@ async def get_game_history(user: dict = Depends(get_current_user)):
                 "opponentUsername": h.get("opponent_username"),
                 "opponentScore": h.get("opponent_score"),
                 "result": h["result"],
+                "sourceDocument": h.get("source_document"),
+                "questionLog": h.get("question_log", []),
                 "playedAt": h["played_at"].isoformat()
             }
             for h in history
